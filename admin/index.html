@@ -3,10 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Overrides browser default block to allow the CMS engine to run eval scripts -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;" />
     <title>Content Manager</title>
   </head>
   <body>
-    <!-- Loads Decap CMS which runs smoothly without breaking browser CSP blocks -->
+    <!-- Loads Decap CMS Engine -->
     <script src="https://unpkg.com@^3.0.0/dist/decap-cms.js"></script>
   </body>
 </html>
