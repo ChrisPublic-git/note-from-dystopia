@@ -1,19 +1,19 @@
 backend:
   name: github
   repo: ChrisPublic-git/note-from-dystopia
-  branch: main
-  base_url: https://vercel.app
-  auth_endpoint: api/auth
+  branch: main # Change to master if your default branch is master
 
-media_folder: "images"
-public_folder: "/images"
+media_folder: "assets/images"
+public_folder: "/assets/images"
 
 collections:
-  - name: "notes"
-    label: "Notes"
-    folder: "/"
-    extension: "html"
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "_posts" # Change to your target content folder
     create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Body Content", name: "body", widget: "markdown" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Body", name: "body", widget: "markdown" }
