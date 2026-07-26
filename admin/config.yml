@@ -1,19 +1,16 @@
 backend:
   name: github
   repo: ChrisPublic-git/note-from-dystopia
-  branch: main # Change to master if your default branch is master
+  branch: main # Change this to match the exact branch you select in Porkbun
 
-media_folder: "assets/images"
+media_folder: "notes/assets/images"
 public_folder: "/assets/images"
 
 collections:
-  - name: "blog"
-    label: "Blog Posts"
-    folder: "_posts" # Change to your target content folder
+  - name: "notes"
+    label: "Notes"
+    folder: "notes" # Assumes your note files live in the notes subdirectory
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
       - { label: "Body", name: "body", widget: "markdown" }
