@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Content Manager</title>
-  </head>
-  <body>
-    <!-- Sveltia CMS runs beautifully on strict browsers without requiring eval -->
-    <script src="https://unpkg.com" type="module"></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager</title>
+  
+  <!-- Explicitly allow Decap CMS scripts and styles to bypass GitHub Pages default restrictions -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://github.com;" />
+
+  
+  </script>
+</head>
+<body>
+  <!-- Clean script loading to avoid "undefined (reading 'init')" runtime errors -->
+  <script src="https://unpkg.com@^3.0.0/dist/decap-cms.js"></script>
+</body>
 </html>
+
 
