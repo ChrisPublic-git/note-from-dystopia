@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Overrides browser default block to allow the CMS engine to run eval scripts -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;" />
     <title>Content Manager</title>
+    <!-- Combined layout system with absolute bypass headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' blob:; connect-src * 'unsafe-inline'; img-src * data: blob:;" />
   </head>
   <body>
-    <!-- Loads Decap CMS Engine -->
-    <script src="https://unpkg.com@^3.0.0/dist/decap-cms.js"></script>
+    <!-- Decap CMS alternative CDN link -->
+    <script src="https://jsdelivr.net"></script>
   </body>
 </html>
