@@ -1,20 +1,15 @@
-backend:
-  name: github
-  repo: ChrisPublic-git/note-from-dystopia
-  branch: main
-  base_url: https://vercel.app
-  auth_endpoint: api/auth
-
-media_folder: "images"
-public_folder: "/images"
-
-collections:
-  - name: "notes"
-    label: "Notes"
-    folder: "/"
-    extension: "html"
-    create: true
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Body Content", name: "body", widget: "markdown" }
-
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Content Manager</title>
+    <link rel="stylesheet" href="https://unpkg.com@^4.0.0/dist/main.css" />
+  </head>
+  <body>
+    <script src="https://unpkg.com@^4.0.0/dist/static-cms-app.js"></script>
+    <script>
+      window.CMS.init();
+    </script>
+  </body>
+</html>
