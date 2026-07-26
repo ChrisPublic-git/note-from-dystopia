@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes from Dystopia</title>
+<meta name="description" content="Irregular dispatches from inside the machine.">
+<style>
+  /* ===================================================================
+     ██  THEME — change the whole look from here  ██
+     Semantic roles, so a theme swap never breaks contrast:
+       --bg          page background
+       --fg          text, rules, structure on the page
+       --surface     filled panels (band, thesis, nav, slide stage, inputs)
+       --on-surface  text sitting on those panels
+       --accent      optional pop (buttons, tags, active states, the +)
+
+     RECIPES ---------------------------------------------------------
+       Dark (default):   as set below
+       Light:            --bg:#fff; --fg:#111; --surface:#111; --on-surface:#fafafa;
+       Add one colour:   --accent:#ff3b30;  (or any bold hue)
+       Rounder:          bump --radius     Heavier bars: change --rule
+     ----------------------------------------------------------------- */
+  :root{
+    --bg:#0d0d0d;
+    --fg:#f0f0f0;
+    --surface:#1b1b1b;
+    --on-surface:#f2f2f2;
+    --accent:var(--fg);          /* set to a colour to add one pop */
+    --rule:5px;
+    --radius:0px;
+    --font:"Helvetica Neue",Helvetica,Arial,sans-serif;
+
+    /* derived — usually leave alone */
+    --grey:      color-mix(in srgb, var(--fg) 46%, var(--bg));
+    --grey-soft: color-mix(in srgb, var(--fg) 26%, var(--bg));
+    --panel:     color-mix(in srgb, var(--fg) 8%,  var(--bg));
+    --on-soft:   color-mix(in srgb, var(--on-surface) 68%, var(--surface));
+    --hair:      color-mix(in srgb, var(--on-surface) 16%, transparent);
+    --dot:       color-mix(in srgb, var(--on-surface) 80%, transparent);
+    --stripe:    color-mix(in srgb, var(--on-surface) 8%,  transparent);
+    --scrim:#000;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:22px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:985px;margin:0 auto;padding:0 20px}
+
+  a{color:var(--fg);text-decoration:none;font-weight:600}
+  a:hover{background:var(--fg);color:var(--bg)}
+  a:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+
+  /* ============ HEADER BAND ============ */
+  .band{position:relative;min-height:210px;display:flex;align-items:flex-end;overflow:hidden;background:var(--surface);border-radius:var(--radius)}
+  #band-img{position:absolute;inset:0;background-size:cover;background-position:center;background-color:var(--surface);
+    filter:grayscale(1) contrast(1.05);
+    background-image:
+      repeating-linear-gradient(135deg, var(--stripe) 0 2px, transparent 2px 6px),
+      radial-gradient(circle, var(--dot) 0.6px, transparent 1px);
+    background-size:auto, 9px 9px;}
+  #band-img::after{content:"";position:absolute;inset:0;opacity:.5;mix-blend-mode:screen;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .band .wrap{position:relative;z-index:2;width:100%;padding-bottom:18px;padding-top:26px}
+  .band .kicker{color:var(--on-surface);font-weight:600;font-size:13px;letter-spacing:.02em;margin-bottom:10px}
+  .band .kicker b{font-weight:800}
+  .wordmark{font-weight:800;letter-spacing:-2px;line-height:.84;color:var(--on-surface);font-size:clamp(46px,10vw,88px)}
+  .wordmark .plus{padding-left:.06em;letter-spacing:0;color:var(--accent)}
+  .wordmark.mono .plus{color:var(--on-surface)}
+
+  /* ============ NAV ============ */
+  nav.access{background:var(--surface)}
+  nav.access .wrap{padding-top:10px;padding-bottom:10px}
+  nav.access ul{list-style:none;display:flex;flex-wrap:wrap;font-size:20px}
+  nav.access a{display:inline-block;color:var(--on-surface);padding:4px 6px;margin:0 1px;letter-spacing:-.02em;border-radius:var(--radius)}
+  nav.access a:hover{background:var(--on-surface);color:var(--surface)}
+
+  /* ============ THESIS ============ */
+  main{padding:34px 0 10px}
+  .thesis{background:var(--surface);padding:26px 26px 28px;margin-bottom:34px;border-radius:var(--radius)}
+  .thesis p{font-weight:300;font-size:28px;line-height:1.24;letter-spacing:.01em;color:var(--on-surface);max-width:24ch}
+  .thesis .sub{font-size:14px;font-weight:400;line-height:22px;color:var(--on-soft);margin-top:16px;max-width:54ch;letter-spacing:0}
+
+  /* ============ FEATURED SLIDER ============ */
+  .seclabel{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--grey);font-weight:600;margin-bottom:10px}
+  .featured{display:grid;grid-template-columns:1fr 230px;border-top:var(--rule) solid var(--fg);border-bottom:var(--rule) solid var(--fg);margin-bottom:40px}
+
+  .feat-stage{position:relative;background:var(--surface);min-height:360px;overflow:hidden}
+  .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .45s ease;display:flex;flex-direction:column;justify-content:flex-end;padding:30px 30px 28px}
+  .slide.current{opacity:1;visibility:visible}
+  /* image layer — swap --img for a real photo; grayscale keeps it B/W */
+  .slide::before{content:"";position:absolute;inset:0;z-index:0;background-image:var(--img);background-size:cover;background-position:center;filter:grayscale(1) contrast(1.08);opacity:.62}
+  .slide::after{content:"";position:absolute;inset:0;z-index:0;
+    background:linear-gradient(180deg, color-mix(in srgb,var(--scrim) 12%,transparent) 0%, color-mix(in srgb,var(--scrim) 82%,transparent) 100%)}
+  .slide .bignum{position:absolute;top:-.18em;right:.04em;z-index:1;font-size:clamp(180px,34vw,340px);font-weight:800;line-height:1;color:transparent;-webkit-text-stroke:2px var(--hair);pointer-events:none}
+  .slide .feat-kicker{position:relative;z-index:2;color:var(--on-surface);font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+  .slide h2{position:relative;z-index:2;color:var(--on-surface);font-size:clamp(30px,5.2vw,50px);line-height:.94;letter-spacing:-.025em;font-weight:800;max-width:15ch;margin-bottom:14px}
+  .slide p{position:relative;z-index:2;color:var(--on-soft);font-size:14px;max-width:46ch;margin-bottom:18px}
+  .slide .read{position:relative;z-index:2;align-self:flex-start;color:var(--on-surface);border:2px solid var(--on-surface);font-weight:800;font-size:15px;letter-spacing:-.01em;padding:8px 16px;border-radius:var(--radius)}
+  .slide .read:hover{background:var(--on-surface);color:var(--surface)}
+
+  .feat-arrows{position:absolute;z-index:3;top:16px;right:16px;display:flex;gap:8px}
+  .feat-arrows button{width:38px;height:38px;background:transparent;border:2px solid var(--on-surface);color:var(--on-surface);font-size:18px;font-weight:800;cursor:pointer;line-height:1;border-radius:var(--radius)}
+  .feat-arrows button:hover{background:var(--on-surface);color:var(--surface)}
+  .feat-arrows button:focus-visible{outline:3px solid var(--on-surface);outline-offset:2px}
+
+  .title-nav{list-style:none;border-left:var(--rule) solid var(--fg);display:flex;flex-direction:column}
+  .title-nav button{width:100%;text-align:left;background:var(--bg);border:none;border-bottom:1px solid var(--fg);font-family:inherit;font-weight:800;font-size:16px;line-height:1.1;letter-spacing:-.01em;color:var(--fg);padding:16px 14px;cursor:pointer;flex:1;display:flex;flex-direction:column;gap:6px}
+  .title-nav button .idx{font-size:11px;letter-spacing:.14em;color:var(--grey);font-weight:700}
+  .title-nav button:hover{background:var(--fg);color:var(--bg)}
+  .title-nav button:hover .idx{color:var(--grey-soft)}
+  .title-nav button.current{background:var(--accent);color:var(--bg)}
+  .title-nav button.current .idx{color:var(--grey-soft)}
+  .title-nav button:focus-visible{outline:3px solid var(--fg);outline-offset:-3px}
+
+  /* ============ FEED + SIDEBAR ============ */
+  .grid{display:grid;grid-template-columns:1fr 300px;gap:44px;align-items:start}
+  .feed{border-top:var(--rule) solid var(--fg)}
+  .dispatch{display:grid;grid-template-columns:1fr 160px;gap:6px 22px;padding:22px 0;border-bottom:var(--rule) solid var(--fg)}
+  .dispatch .body h3{font-size:30px;line-height:.96;letter-spacing:-.02em;font-weight:800;margin-bottom:10px}
+  .dispatch .body h3 a{display:inline;padding:2px 4px;margin:-2px -4px;border-radius:var(--radius)}
+  .dispatch .body p{color:var(--grey);font-size:14px;max-width:52ch}
+  .dispatch .meta{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);border-top:1px solid var(--fg);padding-top:6px;line-height:1.9;text-align:right}
+  .dispatch .meta .no{color:var(--fg);font-weight:700;display:block}
+  .dispatch .meta .tag{display:inline-block;margin-top:6px;color:var(--accent);border:1px solid var(--accent);padding:1px 6px;font-size:9.5px;letter-spacing:.16em;border-radius:var(--radius)}
+  .redact{background:var(--fg);color:var(--fg);user-select:none;padding:0 2px}
+
+  aside{display:flex;flex-direction:column;gap:34px}
+  aside h2{font-size:24px;letter-spacing:-.02em;font-weight:800;border-bottom:var(--rule) solid var(--fg);padding-bottom:8px;margin-bottom:14px}
+  .sub .fine{color:var(--grey);font-size:13px;margin-bottom:14px}
+  .sub input[type=email]{width:100%;background:var(--surface);border:1px solid var(--surface);color:var(--on-surface);font-family:inherit;font-size:14px;padding:12px;letter-spacing:.02em;margin-bottom:10px;border-radius:var(--radius)}
+  .sub input[type=email]::placeholder{color:var(--grey)}
+  .sub input[type=email]:focus{outline:3px solid var(--fg);outline-offset:2px}
+  .sub .btn{width:100%;background:var(--accent);color:var(--bg);border:none;font-family:inherit;font-weight:800;font-size:18px;letter-spacing:-.01em;padding:12px;cursor:pointer;border-radius:var(--radius)}
+  .sub .btn:hover{background:var(--bg);color:var(--fg);box-shadow:inset 0 0 0 2px var(--accent)}
+  .sub .btn:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+  .sub .err{color:var(--fg);font-weight:800;font-size:12.5px;margin-top:9px;min-height:1em;text-decoration:underline}
+  .sub .alt{color:var(--grey);font-size:12px;margin-top:10px}
+  .sub.done .live{display:none}
+  .cleared{display:none}
+  .sub.done .cleared{display:block;background:var(--accent);color:var(--bg);padding:18px 16px;text-align:center;border-radius:var(--radius);animation:pop .3s cubic-bezier(.2,.9,.3,1.4) both}
+  .cleared b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .cleared span{display:block;font-size:12px;margin-top:8px;font-weight:600}
+  @keyframes pop{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+
+  .log ul{list-style:none;font-size:16px;font-weight:800;letter-spacing:-.01em}
+  .log li{border-bottom:1px solid var(--fg)}
+  .log a{display:block;padding:9px 5px;margin:0 -5px;border-radius:var(--radius)}
+  .tags .cloud{display:flex;flex-wrap:wrap;gap:6px}
+  .tags a{display:inline-block;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;font-size:12px;font-weight:600;border-radius:var(--radius)}
+  .tags a:hover{background:var(--accent);color:var(--bg)}
+
+  footer{border-top:var(--rule) solid var(--fg);margin-top:36px;padding:26px 0 60px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--grey)}
+  footer .col{display:flex;flex-direction:column;gap:6px}
+
+  @media (max-width:760px){
+    .featured{grid-template-columns:1fr}
+    .title-nav{flex-direction:row;border-left:none;border-top:var(--rule) solid var(--fg);overflow-x:auto}
+    .title-nav button{border-bottom:none;border-right:1px solid var(--fg);min-width:150px}
+    .grid{grid-template-columns:1fr;gap:34px}
+    .dispatch{grid-template-columns:1fr}
+    .dispatch .meta{text-align:left}
+    nav.access ul{font-size:16px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .slide{transition:none}
+    .sub.done .cleared{animation:none}
+  }
+</style>
+</head>
+<body>
+
+  <header class="band">
+    <div id="band-img" role="img" aria-label="Transmission band"></div>
+    <div class="wrap">
+      <p class="kicker">Irregular dispatches <b>+</b> No paywall <b>+</b> No tracking</p>
+      <!-- remove class "mono" to tint the + with --accent -->
+      <h1 class="wordmark mono">Notes from Dystopia<span class="plus">+</span></h1>
+    </div>
+  </header>
+
+  <nav class="access" aria-label="Primary">
+    <div class="wrap"><ul>
+      <li><a href="#featured">Featured.</a></li>
+      <li><a href="#feed">Dispatches.</a></li>
+      <li><a href="#join">Subscribe.</a></li>
+      <li><a href="#topics">Topics.</a></li>
+      <li><a href="https://x.com/yourhandle" target="_blank" rel="noopener">Origin&nbsp;feed.</a></li>
+    </ul></div>
+  </nav>
+
+  <main>
+    <div class="wrap">
+
+      <div class="thesis">
+        <p>Notes for the parts of the feed that don't survive the algorithm.</p>
+        <p class="sub">It's what I post on X, minus the decay — field notes, small heresies, and the occasional signal smuggled out past the moderation layer, before it's throttled into the void.</p>
+      </div>
+
+      <!-- ===== FEATURED SLIDER =====
+           Each slide's B/W art is in its inline style="--img:url(...)".
+           Swap that url for url('img/feature-01.jpg') to use a real photo —
+           the grayscale filter converts any colour image to B/W. -->
+      <section id="featured" aria-roledescription="carousel" aria-label="Featured dispatches">
+        <div class="seclabel">Featured</div>
+        <div class="featured">
+          <div class="feat-stage">
+            <div class="feat-arrows">
+              <button class="feat-prev" aria-label="Previous featured dispatch">&#8249;</button>
+              <button class="feat-next" aria-label="Next featured dispatch">&#8250;</button>
+            </div>
+
+            <article class="slide current" aria-label="1 of 3" style="--img:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='420' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='640' height='420' fill='black'/%3E%3Cg stroke='white' stroke-opacity='0.35'%3E%3Cpath d='M0 60H640M0 120H640M0 180H640M0 240H640M0 300H640M0 360H640'/%3E%3Cpath d='M80 0V420M160 0V420M240 0V420M320 0V420M400 0V420M480 0V420M560 0V420'/%3E%3C/g%3E%3Cg fill='white'%3E%3Crect x='240' y='120' width='80' height='60' fill-opacity='0.92'/%3E%3Crect x='400' y='180' width='80' height='60' fill-opacity='0.5'/%3E%3Crect x='160' y='240' width='80' height='60' fill-opacity='0.72'/%3E%3Crect x='480' y='60' width='80' height='60' fill-opacity='0.3'/%3E%3C/g%3E%3C/svg%3E&quot;)">
+              <span class="bignum" aria-hidden="true">01</span>
+              <div class="feat-kicker">Field note</div>
+              <h2>The quiet violence of the checkout screen</h2>
+              <p>They recolored the "no thanks" button the color of concrete again. A study in how consent gets sanded down one A/B test at a time.</p>
+              <a class="read" href="#">Read dispatch &#8594;</a>
+            </article>
+
+            <article class="slide" aria-label="2 of 3" style="--img:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='420' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='640' height='420' fill='black'/%3E%3Cg fill='none' stroke='white'%3E%3Ccircle cx='470' cy='210' r='40' stroke-opacity='0.95'/%3E%3Ccircle cx='470' cy='210' r='95' stroke-opacity='0.7'/%3E%3Ccircle cx='470' cy='210' r='160' stroke-opacity='0.5'/%3E%3Ccircle cx='470' cy='210' r='235' stroke-opacity='0.32'/%3E%3Ccircle cx='470' cy='210' r='320' stroke-opacity='0.18'/%3E%3C/g%3E%3Ccircle cx='470' cy='210' r='9' fill='white'/%3E%3C/svg%3E&quot;)">
+              <span class="bignum" aria-hidden="true">02</span>
+              <div class="feat-kicker">Transmission</div>
+              <h2>The algorithm recommended I feel nothing today</h2>
+              <p>And it read the room. On manufactured calm, the loyalty program as confessional, and why the machine keeps recommending the exit.</p>
+              <a class="read" href="#">Read dispatch &#8594;</a>
+            </article>
+
+            <article class="slide" aria-label="3 of 3" style="--img:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='420' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='640' height='420' fill='black'/%3E%3Cg fill='white'%3E%3Crect x='30' y='0' width='26' height='420' fill-opacity='0.85'/%3E%3Crect x='80' y='0' width='12' height='420' fill-opacity='0.4'/%3E%3Crect x='120' y='0' width='40' height='420' fill-opacity='0.6'/%3E%3Crect x='185' y='0' width='8' height='420' fill-opacity='0.9'/%3E%3Crect x='220' y='0' width='30' height='420' fill-opacity='0.3'/%3E%3Crect x='275' y='0' width='18' height='420' fill-opacity='0.7'/%3E%3Crect x='320' y='0' width='48' height='420' fill-opacity='0.5'/%3E%3Crect x='390' y='0' width='10' height='420' fill-opacity='0.85'/%3E%3Crect x='425' y='0' width='34' height='420' fill-opacity='0.35'/%3E%3Crect x='485' y='0' width='16' height='420' fill-opacity='0.65'/%3E%3Crect x='525' y='0' width='44' height='420' fill-opacity='0.45'/%3E%3Crect x='590' y='0' width='20' height='420' fill-opacity='0.8'/%3E%3C/g%3E%3C/svg%3E&quot;)">
+              <span class="bignum" aria-hidden="true">03</span>
+              <div class="feat-kicker">Unclassified</div>
+              <h2>Founding document, or: why I'm writing this down</h2>
+              <p>Every feed is a shredder running slightly slower than you can read. This is where the pages go before they're gone.</p>
+              <a class="read" href="#">Read dispatch &#8594;</a>
+            </article>
+          </div>
+
+          <ol class="title-nav" role="tablist" aria-label="Choose featured dispatch">
+            <li><button class="current" data-i="0" role="tab" aria-current="true"><span class="idx">01</span>The quiet violence of the checkout screen</button></li>
+            <li><button data-i="1" role="tab" aria-current="false"><span class="idx">02</span>The algorithm recommended I feel nothing today</button></li>
+            <li><button data-i="2" role="tab" aria-current="false"><span class="idx">03</span>Founding document, or: why I'm writing this down</button></li>
+          </ol>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div>
+          <div class="seclabel">Recovered from the last transmission</div>
+          <section id="feed" class="feed">
+            <article class="dispatch">
+              <div class="body"><h3><a href="#">On the quiet violence of the checkout screen</a></h3>
+              <p>They recolored the "no thanks" button to the color of concrete again. A small thing.</p></div>
+              <div class="meta"><span class="no">Dispatch 003</span>Filed · 04:12<br><span class="tag">Field note</span></div>
+            </article>
+            <article class="dispatch">
+              <div class="body"><h3><a href="#">The algorithm recommended I feel nothing today</a></h3>
+              <p>Notes on manufactured calm and why the <span class="redact">████████</span> keeps recommending the exit.</p></div>
+              <div class="meta"><span class="no">Dispatch 002</span>Filed · 23:57<br><span class="tag">Transmission</span></div>
+            </article>
+            <article class="dispatch">
+              <div class="body"><h3><a href="#">Founding document, or: why I'm writing this down</a></h3>
+              <p>Every feed is a shredder running slightly slower than you can read.</p></div>
+              <div class="meta"><span class="no">Dispatch 001</span>Filed · 06:30<br><span class="tag">Unclassified</span></div>
+            </article>
+          </section>
+        </div>
+
+        <aside>
+          <section class="sub" id="join">
+            <h2>Request access</h2>
+            <div class="live">
+              <p class="fine">Add your address to the distribution list. One transmission per dispatch. Withdraw any time.</p>
+              <input type="email" id="email" placeholder="operative@address.net" autocomplete="email" aria-label="Email address">
+              <button class="btn" id="submit">Request clearance</button>
+              <div class="err" id="err" role="alert"></div>
+              <p class="alt">Prefer analog? <a id="mailtoLink" href="#">Transmit by mail &#8594;</a></p>
+            </div>
+            <div class="cleared" aria-live="polite"><b>On the list</b><span>First dispatch arrives when it arrives.</span></div>
+          </section>
+
+          <section class="log">
+            <h2>Transmission log</h2>
+            <ul>
+              <li><a href="#feed">Latest dispatch.</a></li>
+              <li><a href="#">Full archive.</a></li>
+              <li><a href="#">About the operator.</a></li>
+              <li><a href="https://x.com/yourhandle" target="_blank" rel="noopener">Origin feed on X.</a></li>
+            </ul>
+          </section>
+
+          <section class="tags" id="topics">
+            <h2>Topics</h2>
+            <div class="cloud">
+              <a href="#">Surveillance</a><a href="#">Interfaces</a><a href="#">Banality</a>
+              <a href="#">Signal</a><a href="#">Noise</a><a href="#">Moderation</a><a href="#">Exit</a>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="col"><span>Notes from Dystopia +</span><span>An irregular transmission</span></div>
+      <div class="col"><a href="https://x.com/yourhandle" target="_blank" rel="noopener">Origin feed on X &#8594;</a><a href="#join">Request clearance &#8594;</a></div>
+      <div class="col"><span>Published by Plastic Gospel</span><span>No ministry affiliation</span></div>
+    </div>
+  </footer>
+
+<script>
+const HEADER_IMAGES = [ /* "img/header-01.jpg", ... empty = built-in texture */ ];
+if(HEADER_IMAGES.length){
+  const p = HEADER_IMAGES[Math.floor(Math.random()*HEADER_IMAGES.length)];
+  document.getElementById('band-img').style.backgroundImage = "url('"+p+"')";
+}
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const tabs=[...document.querySelectorAll('.title-nav button')];
+  const stage=document.getElementById('featured');
+  const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let idx=0,timer=null;
+  function show(i){idx=(i+slides.length)%slides.length;
+    slides.forEach((s,n)=>{s.classList.toggle('current',n===idx);s.setAttribute('aria-hidden',n!==idx);});
+    tabs.forEach((b,n)=>{b.classList.toggle('current',n===idx);b.setAttribute('aria-current',n===idx?'true':'false');});}
+  const next=()=>show(idx+1),prev=()=>show(idx-1);
+  const stop=()=>{clearInterval(timer);timer=null;};
+  const start=()=>{if(!rm&&!timer)timer=setInterval(next,6000);};
+  const restart=()=>{stop();start();};
+  tabs.forEach((b,n)=>b.addEventListener('click',()=>{show(n);restart();}));
+  document.querySelector('.feat-next').addEventListener('click',()=>{next();restart();});
+  document.querySelector('.feat-prev').addEventListener('click',()=>{prev();restart();});
+  stage.addEventListener('mouseenter',stop);stage.addEventListener('mouseleave',start);
+  stage.addEventListener('focusin',stop);stage.addEventListener('focusout',start);
+  stage.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){next();restart();}if(e.key==='ArrowLeft'){prev();restart();}});
+  show(0);start();
+})();
+const ENDPOINT="",MAILTO="dispatch@yourdomain.tld";
+const panel=document.getElementById('join'),form=document.getElementById('email'),btn=document.getElementById('submit'),errEl=document.getElementById('err'),mailtoA=document.getElementById('mailtoLink');
+mailtoA.href="mailto:"+MAILTO+"?subject=Request%20clearance%20—%20Notes%20from%20Dystopia";
+const valid=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+async function submit(){const v=form.value.trim();errEl.textContent="";
+  if(!valid(v)){errEl.textContent="Address not recognized. Check the format and retransmit.";form.focus();return;}
+  btn.disabled=true;btn.textContent="Transmitting…";
+  try{if(ENDPOINT){const r=await fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:v})});if(!r.ok)throw 0;}
+    else{window.location.href=mailtoA.href.replace("Request%20clearance","Add%20me:%20"+encodeURIComponent(v));}
+    panel.classList.add('done');}
+  catch(e){btn.disabled=false;btn.textContent="Request clearance";errEl.textContent="Transmission failed. Try again, or use the analog channel.";}}
+btn.addEventListener('click',submit);
+form.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+</script>
+</body>
+</html>
