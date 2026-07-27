@@ -1,1 +1,5 @@
+[build]
+  # Forces Netlify to publish the root folder directly 
+  # This completely overrides the locked box in the UI dashboard
+  publish = "."
 
