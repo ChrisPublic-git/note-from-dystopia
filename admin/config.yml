@@ -1,16 +1,28 @@
+site_url: https://notesfromdystopia.com
+
 backend:
   name: github
   repo: ChrisPublic-git/note-from-dystopia
-  branch: main # Change this to match the exact branch you select in Porkbun
+  branch: main
 
 media_folder: "notes/assets/images"
-public_folder: "/assets/images"
+public_folder: "/notes/assets/images"
 
 collections:
   - name: "notes"
-    label: "Notes"
-    folder: "notes" # Assumes your note files live in the notes subdirectory
+    label: "Dispatches"
+    folder: "notes"
     create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+
     fields:
       - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Category", name: "category", widget: "string", default: "Dispatch" }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Featured Image", name: "image", widget: "image", required: false }
+      - { label: "Topics", name: "topics", widget: "list", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
