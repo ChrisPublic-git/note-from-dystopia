@@ -1,3 +1,5 @@
+site_url: https://notesfromdystopia.com
+
 backend:
   name: github
   repo: ChrisPublic-git/note-from-dystopia
